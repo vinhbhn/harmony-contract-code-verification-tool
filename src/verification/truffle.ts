@@ -1,56 +1,63 @@
-import fs from 'fs'
-import path from 'path'
+import fs from 'fs';
+import path from 'path';
 
-const { execSync } = require('child_process')
+import { execSync } from 'child_process';
 
-const truffleConfig = (value) => {
-  return `
-  module.exports = {
-    compilers: {
-      solc: {
-      version: "${value}",
+const truffleConfig = (value: string) => {
+  return `module.exports = {
+      compilers: {
+        solc: {
+          version: '${value}',
+        },
       },
-    },
-  };
-  
-  `
-}
+    };
+  `;
+};
 
-export const createConfiguration = async (solidityVersion, directory) => {
+export const createConfiguration = async (
+  solidityVersion: string,
+  directory: string
+) => {
   if (!solidityVersion) {
-    throw new Error('No Solidity version specified')
+    throw new Error('No Solidity version specified');
   }
-  console.log(path.join(path.resolve(directory), 'truffle-config.js'))
-  const config = truffleConfig(solidityVersion)
-  fs.writeFileSync(path.join(path.resolve(directory), 'truffle-config.js'), config)
-}
+  console.log(path.join(path.resolve(directory), 'truffle-config.js'));
+  const config = truffleConfig(solidityVersion);
+  fs.writeFileSync(
+    path.join(path.resolve(directory), 'truffle-config.js'),
+    config
+  );
+};
 
+export const installDependencies = async (directory: string) => {
+  execSync(`cd ${directory} && yarn`);
+};
 
-export const installDependencies = async (directory) => {
-  execSync(`cd ${directory} && yarn`)
-}
+export const compile = async (directory: string) => {
+  execSync(`cd ${directory} && truffle compile`);
+};
 
-export const compile = async (directory) => {
-  execSync(`cd ${directory} && truffle compile`)
-}
+const renameFile = (
+  filename: string,
+  inExtension: string,
+  outExtension: string
+) => {
+  return filename.split(inExtension)[0] + outExtension;
+};
 
-const renameFile = (filename, inExtension, outExtension) => {
-  return filename.split(inExtension)[0] + outExtension
-}
+const getFileName = (githubUrl: string) => {
+  const parts = githubUrl.split('/');
+  return parts[parts.length - 1];
+};
 
-const getFileName = githubUrl => {
-  const parts = githubUrl.split('/')
-  return parts[parts.length - 1]
-}
+export const getByteCode = async (githubUrl: string, directory: string) => {
+  const fileName = getFileName(githubUrl);
+  const abiFileName = renameFile(fileName, 'sol', 'json');
 
-export const getByteCode = async (githubUrl, directory) => {
-  const fileName = getFileName(githubUrl)
-  const abiFileName = renameFile(fileName, 'sol', 'json')
+  const dir = path.join(directory, 'build', 'contracts', abiFileName);
 
-  const dir = path.join(directory, 'build', 'contracts', abiFileName)
+  const data = fs.readFileSync(dir).toString();
 
-  const data = fs.readFileSync(dir).toString()
-
-  const { deployedBytecode, bytecode } = JSON.parse(data)
-  return { deployedBytecode, bytecode }
-}
+  const { deployedBytecode, bytecode } = JSON.parse(data);
+  return { deployedBytecode, bytecode };
+};
