@@ -5,13 +5,13 @@ import { execSync } from 'child_process';
 
 const truffleConfig = (value: string) => {
   return `module.exports = {
-      compilers: {
-        solc: {
-          version: '${value}',
-        },
-      },
-    };
-  `;
+  compilers: {
+    solc: {
+      version: "${value}"
+    }
+  }
+};
+`;
 };
 
 export const createConfiguration = async (
