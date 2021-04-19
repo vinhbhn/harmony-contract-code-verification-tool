@@ -5,13 +5,19 @@ import { execSync } from 'child_process';
 
 const truffleConfig = (value: string) => {
   return `module.exports = {
-      compilers: {
-        solc: {
-          version: '${value}',
+  compilers: {
+    solc: {
+      version: "${value}",
+      settings: {
+        optimizer: {
+          enabled: true,
+          runs: 200,
         },
       },
-    };
-  `;
+    },
+  },
+};
+`;
 };
 
 export const createConfiguration = async (
@@ -37,11 +43,7 @@ export const compile = async (directory: string) => {
   execSync(`cd ${directory} && truffle compile`);
 };
 
-const renameFile = (
-  filename: string,
-  inExtension: string,
-  outExtension: string
-) => {
+const renameFile = (filename: any, inExtension: any, outExtension: any) => {
   return filename.split(inExtension)[0] + outExtension;
 };
 

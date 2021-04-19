@@ -9,21 +9,21 @@ const run = async () => {
   //   chain: 'testnet',
   // });
 
-  // const res = await codeVerification({
-  //   contractAddress: 'one16rgcltnlrekr664ueczvvhl2j7s5p6amezdhw3',
-  //   githubURL:
-  //     'https://github.com/harmony-one/davinci_nft_marketplace/blob/master/contracts/token/DavinciToken.sol',
-  //   solidityVersion: '0.6.12',
-  //   chain: 'testnet',
-  // });
-
   const res = await codeVerification({
-    contractAddress: '0x0c1310bbd93c6977fde20dc813cff8236ba1f0dd',
+    contractAddress: 'one16rgcltnlrekr664ueczvvhl2j7s5p6amezdhw3',
     githubURL:
-      'https://github.com/harmony-one/ethhmy-bridge/blob/master/contracts/lib/MultiSigWallet.sol',
-    solidityVersion: '0.5.17',
-    chain: 'mainnet',
+      'https://github.com/harmony-one/davinci_nft_marketplace/blob/master/contracts/token/DavinciToken.sol',
+    solidityVersion: '0.6.12',
+    chain: 'testnet',
   });
+
+  // const res = await codeVerification({
+  //   contractAddress: '0x0c1310bbd93c6977fde20dc813cff8236ba1f0dd',
+  //   githubURL:
+  //     'https://github.com/harmony-one/ethhmy-bridge/blob/master/contracts/lib/MultiSigWallet.sol',
+  //   solidityVersion: '0.5.17',
+  //   chain: 'mainnet',
+  // });
 
   // const res = await codeVerification({
   //   contractAddress: '0x0f916E162362b12e87b1Af221BB5A3e320dd9aeb',

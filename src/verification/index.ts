@@ -12,8 +12,13 @@ interface ICodeVerification {
   chain: string;
 }
 
-export const codeVerification = async (hmy: ICodeVerification) => {
-  const taskId = hmy.contractAddress;
+export const codeVerification = async ({
+  contractAddress,
+  solidityVersion,
+  githubURL,
+  chain,
+}: ICodeVerification) => {
+  const taskId = contractAddress;
   const directory = path.join(__dirname, '../', taskId);
 
   try {
@@ -24,23 +29,23 @@ export const codeVerification = async (hmy: ICodeVerification) => {
 
     console.log('Getting actual bytecode from the blockchain...');
     const actualBytecode = await rpc.getSmartContractCode(
-      hmy.chain,
-      hmy.contractAddress
+      chain,
+      contractAddress
     );
 
     if (!actualBytecode || actualBytecode === '0x') {
-      throw new Error(`No bytecode found for address ${hmy.contractAddress}`);
+      throw new Error(`No bytecode found for address ${contractAddress}`);
     }
 
     console.log('Cloning github...');
     try {
-      await github.clone(hmy.githubURL, taskId);
+      await github.clone(githubURL, taskId);
       console.log('Creating truffle config...');
     } catch (e) {
       console.warn(e);
     }
 
-    await truffle.createConfiguration(hmy.solidityVersion, directory);
+    await truffle.createConfiguration(solidityVersion, directory);
     // await truffle.createMigration(directory, githubURL)
     console.log('Installing contract dependencies...');
     await truffle.installDependencies(directory);
@@ -48,15 +53,15 @@ export const codeVerification = async (hmy: ICodeVerification) => {
     await truffle.compile(directory);
     console.log('Getting compiled bytecode');
     const { deployedBytecode, bytecode } = await truffle.getByteCode(
-      hmy.githubURL,
+      githubURL,
       directory
     );
 
     console.log('Cleaning up...');
     const verified = verifyByteCode(
-      actualBytecode,
       deployedBytecode,
-      hmy.solidityVersion
+      actualBytecode,
+      solidityVersion
     );
 
     if (verified) {
